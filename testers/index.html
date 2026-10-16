@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Tester guide — Job Profit Guard</title>
+<link rel="icon" href="../favicon.png"><link rel="stylesheet" href="../style.css">
+<style>
+  :root { --test:#1f5fad; --test-soft:#e8f0fa; --warn-soft:#fbf1dc; --warn-line:#e7c98a; --ok:#2f746a; }
+  @media (prefers-color-scheme: dark) { :root { --test:#6ea2e6; --test-soft:#1d2a3a; --warn-soft:#2e2818; --warn-line:#6b5626; --ok:#6cc2b4; } }
+  .lede { font-size:17px; color:var(--ink); max-width:60ch; }
+  .steps { list-style:none; padding:0; margin:22px 0 8px; display:grid; gap:10px; grid-template-columns:repeat(3,1fr); }
+  .steps li { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; color:var(--ink); max-width:none; }
+  .steps b { display:flex; width:28px; height:28px; border-radius:50%; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent); font-size:14px; margin-bottom:8px; }
+  .steps span { display:block; font-weight:800; }
+  .steps small { color:var(--muted); font-size:13px; line-height:1.4; display:block; margin-top:2px; }
+  @media (max-width:560px) { .steps { grid-template-columns:1fr; } .steps li { display:grid; grid-template-columns:28px 1fr; column-gap:12px; align-items:start; } .steps b { margin:0; grid-row:span 2; } }
+  .badge-icon { background:var(--test); border-radius:14px; }
+  .tag { display:inline-block; font-size:12px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; padding:3px 8px; border-radius:999px; background:var(--test-soft); color:var(--test); }
+  .logins { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0; }
+  @media (max-width:560px) { .logins { grid-template-columns:1fr; } }
+  .login { border:1px solid var(--line); border-radius:14px; padding:14px 16px; background:var(--card); }
+  .login h3 { margin:6px 0 2px; }
+  .login p { margin:0; font-size:14px; }
+  .note { font-size:14px; }
+  .progress { position:sticky; top:0; z-index:2; background:var(--bg); padding:12px 0 10px; border-bottom:1px solid var(--line); margin:0 0 6px; }
+  .progress-row { display:flex; justify-content:space-between; align-items:baseline; font-size:14px; color:var(--muted); }
+  .progress-row strong { font-size:15px; }
+  .bar { height:8px; background:var(--line); border-radius:99px; overflow:hidden; margin-top:6px; }
+  .bar i { display:block; height:100%; width:0; background:var(--ok); border-radius:99px; transition:width .25s; }
+  .reset { background:none; border:0; color:var(--accent); font:inherit; font-size:13px; cursor:pointer; padding:0; }
+  details.area { border:1px solid var(--line); border-radius:14px; margin:10px 0; background:var(--card); }
+  details.area > summary { list-style:none; cursor:pointer; padding:14px 16px; display:flex; align-items:center; gap:10px; font-weight:800; }
+  details.area > summary::-webkit-details-marker { display:none; }
+  details.area > summary::after { content:"›"; margin-left:auto; font-size:20px; color:var(--muted); transition:transform .2s; }
+  details.area[open] > summary::after { transform:rotate(90deg); }
+  .count { font-size:12px; font-weight:700; color:var(--muted); background:var(--bg); border:1px solid var(--line); border-radius:999px; padding:1px 8px; }
+  .count.done { color:var(--ok); border-color:var(--ok); }
+  .checks { list-style:none; margin:0; padding:0 8px 8px; }
+  .checks li { max-width:none; margin:0; }
+  .checks label { display:flex; gap:12px; align-items:flex-start; padding:10px 8px; border-radius:10px; cursor:pointer; color:var(--ink); line-height:1.45; }
+  .checks label:hover { background:var(--bg); }
+  .checks input { appearance:none; flex:none; width:22px; height:22px; margin:1px 0 0; border:2px solid var(--line); border-radius:6px; display:grid; place-content:center; background:var(--bg); cursor:pointer; }
+  .checks input:checked { background:var(--ok); border-color:var(--ok); }
+  .checks input:checked::after { content:""; width:10px; height:6px; border:solid #fff; border-width:0 0 2.5px 2.5px; transform:rotate(-45deg) translate(1px,-1px); }
+  .checks input:checked + span { color:var(--muted); text-decoration:line-through; text-decoration-color:var(--line); }
+  .checks small { display:block; color:var(--muted); font-size:13px; }
+  .group-title { font-size:13px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin:26px 0 4px; }
+  .pills { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
+  .pills span { border:1px dashed var(--line); border-radius:999px; padding:6px 12px; font-size:14px; color:var(--ink); }
+  .pills small { color:var(--muted); }
+  .callout { border:1px solid var(--warn-line); background:var(--warn-soft); border-radius:14px; padding:6px 18px; margin:12px 0; }
+  .callout li { color:var(--ink); }
+  .report { border:2px solid var(--accent); border-radius:16px; padding:18px 20px; margin:12px 0; }
+  .report h2 { margin-top:0; }
+  .report ol li { color:var(--ink); }
+  .path { display:inline-block; font-weight:800; color:var(--ink); background:var(--card); border:1px solid var(--line); border-radius:8px; padding:2px 8px; }
+</style></head><body><main>
+<header><div class="brand">Job Profit Guard · <span class="tag">Beta testing</span></div><h1>Tester guide</h1>
+<p class="lede">JPG Test is the full Job Profit Guard app on a separate test server. Nothing you do in it touches real customers or real money, so try everything, and try to break it.</p></header>
+
+<ol class="steps">
+  <li><b>1</b><span>Install JPG Test</span><small>Android phone, takes a minute.</small></li>
+  <li><b>2</b><span>Sign in</span><small>With the owner or crew test login you were sent.</small></li>
+  <li><b>3</b><span>Test and report</span><small>Tick off the checklist, report anything odd.</small></li>
+</ol>
+
+<section class="download" id="download">
+  <div class="download-head"><img class="badge-icon" src="../app-icon.png" alt="" width="64" height="64"><div><h2>Get JPG Test</h2><p class="meta">Android · installs next to the real app</p></div></div>
+  <a class="button" href="JPG-Test.apk?v=2" download="JPG-Test.apk">Download JPG Test</a>
+  <p class="meta">Version 1.0.0 (build 2) · 66 MB · Android 7 or newer</p>
+  <h3>Installing it</h3>
+  <ol>
+    <li>Tap <strong>Download JPG Test</strong>, then open the file when it finishes.</li>
+    <li>If your phone asks, allow your browser to <strong>install unknown apps</strong>.</li>
+    <li>Tap <strong>Install</strong>. If Google Play Protect says it doesn't recognise the app, tap <strong>More details → Install anyway</strong>.</li>
+  </ol>
+  <p class="meta">It shows up as <strong>JPG Test</strong> with a blue icon. The real Job Profit Guard app, if you have it, stays installed.</p>
+</section>
+
+<h2>Signing in</h2>
+<p>Tap <strong>Sign in</strong> and enter the email and password you were sent. JPG Test doesn't email you a code.</p>
+<div class="logins">
+  <div class="login"><span class="tag">Owner</span><h3>Prairie Test Builders</h3><p>The boss's view: five sample jobs (on track, watch, at risk, not started and completed), with change orders and a crew day waiting for review.</p></div>
+  <div class="login"><span class="tag">Crew</span><h3>Casey Crew</h3><p>A crew member on two of those jobs. Sees the work, never the money. Best on a second phone.</p></div>
+</div>
+<p class="note">Testers share these logins, so you'll see each other's changes. We reset the sample data between rounds. Want a clean business of your own? Tap <strong>Create owner account</strong> with your own email, then invite yourself as crew from <span class="path">Account → Crew</span>.</p>
+
+<h2>What should work</h2>
+<div class="progress"><div class="progress-row"><span><strong id="done">0</strong> of <span id="total">0</span> checked</span><button class="reset" id="reset" type="button">Clear ticks</button></div><div class="bar"><i id="bar"></i></div></div>
+
+<p class="group-title">Owner</p>
+<details class="area" open><summary>Coach &amp; jobs <span class="count"></span></summary><ul class="checks">
+  <li><label><input type="checkbox" data-k="coach"><span>Coach shows today's plan, projected profit, money at risk and "Do this next"</span></label></li>
+  <li><label><input type="checkbox" data-k="jobs-filter"><span>Jobs: the filter chips (Active, At risk, Watch, On track, Completed) and their counts</span></label></li>
+  <li><label><input type="checkbox" data-k="jobs-search"><span>Jobs: search by job, customer or address</span></label></li>
+  <li><label><input type="checkbox" data-k="job-page"><span>Job page: warnings, "Also watch", and the timeline</span></label></li>
+</ul></details>
+<details class="area"><summary>New job <span class="count"></span></summary><ul class="checks">
+  <li><label><input type="checkbox" data-k="new-job"><span>Create a job from scratch</span></label></li>
+  <li><label><input type="checkbox" data-k="new-job-quote"><span>Create one from a quote<small>Photo or PDF; the app reads the numbers for you to check.</small></span></label></li>
+  <li><label><input type="checkbox" data-k="edit-job"><span>Edit a job's budget or customer details</span></label></li>
+</ul></details>
+<details class="area"><summary>Daily check-in <span class="count"></span></summary><ul class="checks">
+  <li><label><input type="checkbox" data-k="checkin-voice"><span>Check in by voice<small>Talk for 30 seconds; check the words and numbers before saving.</small></span></label></li>
+  <li><label><input type="checkbox" data-k="checkin-typed"><span>Check in by typing hours, materials, other costs and progress</span></label></li>
+  <li><label><input type="checkbox" data-k="receipt"><span>Scan a receipt into the check-in</span></label></li>
+  <li><label><input type="checkbox" data-k="checkin-edit"><span>Edit or delete a check-in (asks for a reason)</span></label></li>
+  <li><label><input type="checkbox" data-k="draft"><span>Close the app halfway through a form, then reopen it<small>What you typed should come back.</small></span></label></li>
+</ul></details>
+<details class="area"><summary>Extras &amp; change orders <span class="count"></span></summary><ul class="checks">
+  <li><label><input type="checkbox" data-k="extra"><span>A possible extra: include it, dismiss it, or turn it into a change order</span></label></li>
+  <li><label><input type="checkbox" data-k="co-draft"><span>Draft a change order and send it (makes a PDF)</span></label></li>
+  <li><label><input type="checkbox" data-k="co-approve"><span>Approve one<small>The job's revenue should go up by its amount.</small></span></label></li>
+  <li><label><input type="checkbox" data-k="co-reject"><span>Reject one</span></label></li>
+</ul></details>
+<details class="area"><summary>Photos, completion &amp; reports <span class="count"></span></summary><ul class="checks">
+  <li><label><input type="checkbox" data-k="photos"><span>Take or add photos, attach a receipt, add a caption, delete one</span></label></li>
+  <li><label><input type="checkbox" data-k="complete"><span>Complete a job<small>Change a final figure; it asks why.</small></span></label></li>
+  <li><label><input type="checkbox" data-k="summary"><span>Read the final summary: expected against actual profit, and where money was made or lost</span></label></li>
+  <li><label><input type="checkbox" data-k="report"><span>Share or preview the final job report PDF</span></label></li>
+  <li><label><input type="checkbox" data-k="reopen"><span>Reopen a completed job</span></label></li>
+</ul></details>
+<details class="area"><summary>Crew, Frank &amp; account <span class="count"></span></summary><ul class="checks">
+  <li><label><input type="checkbox" data-k="crew-invite"><span>Invite crew and put them on a job</span></label></li>
+  <li><label><input type="checkbox" data-k="crew-review"><span>Approve or reject a day the crew filed</span></label></li>
+  <li><label><input type="checkbox" data-k="frank"><span>Ask Frank (the round button) about your jobs and money; attach a photo</span></label></li>
+  <li><label><input type="checkbox" data-k="export"><span>Account → Export your data (spreadsheets or a backup)</span></label></li>
+  <li><label><input type="checkbox" data-k="owner-misc"><span>Edit your profile, read Privacy and Terms, sign out and back in</span></label></li>
+</ul></details>
+
+<p class="group-title">Crew</p>
+<details class="area"><summary>Crew member <span class="count"></span></summary><ul class="checks">
+  <li><label><input type="checkbox" data-k="crew-jobs"><span>See only your jobs, and no money anywhere<small>No budgets, costs or profit on any screen.</small></span></label></li>
+  <li><label><input type="checkbox" data-k="crew-file"><span>File a day: hours, progress and a note</span></label></li>
+  <li><label><input type="checkbox" data-k="crew-attach"><span>Add photos (up to six) and a voice note</span></label></li>
+  <li><label><input type="checkbox" data-k="crew-account"><span>Account: profile, Report a problem</span></label></li>
+</ul></details>
+
+<h2>Not in this version yet</h2>
+<div class="pills">
+  <span>Paid plans <small>· after Google Play</small></span>
+  <span>Invoicing &amp; payments <small>· next</small></span>
+  <span>iPhone</span>
+  <span>Browser version</span>
+  <span>Notifications in JPG Test <small>· the real app has them</small></span>
+</div>
+
+<h2>Known issues</h2>
+<div class="callout"><ul>
+  <li>Play Protect may warn about the app when you install it. That's normal outside Google Play.</li>
+  <li>If the camera or photo picker won't open, close the app completely and open it again.</li>
+  <li>Voice recordings stay on the phone that made them. The words are saved, but the audio is gone if you uninstall.</li>
+  <li>Frank, and the voice and receipt reading, can take several seconds.</li>
+</ul></div>
+
+<section class="report">
+  <h2>Found something? Report it</h2>
+  <p>In the app, go to <span class="path">Account → Report a problem</span>. Crew: the Account tab. Tell us:</p>
+  <ol><li>what you were doing,</li><li>what you expected, and</li><li>what happened instead.</li></ol>
+  <p>Add a screenshot if you can. Your phone, app version and last few screens are added for you. If the app won't open at all, email <a href="mailto:support@jobprofitguard.app">support@jobprofitguard.app</a>.</p>
+</section>
+
+<footer>Job Profit Guard · Tester guide · <a href="../privacy.html">Privacy Policy</a></footer>
+</main>
+<script>
+(() => {
+  const KEY = 'jpg_tester_checks_v1';
+  let ticked = {};
+  try { ticked = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch { ticked = {}; }
+  const boxes = [...document.querySelectorAll('.checks input')];
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(ticked)); } catch { /* ticks just won't persist */ } };
+  const render = () => {
+    const done = boxes.filter((box) => box.checked).length;
+    document.getElementById('done').textContent = done;
+    document.getElementById('total').textContent = boxes.length;
+    document.getElementById('bar').style.width = `${boxes.length ? (done / boxes.length) * 100 : 0}%`;
+    document.querySelectorAll('details.area').forEach((area) => {
+      const own = [...area.querySelectorAll('input')];
+      const n = own.filter((box) => box.checked).length;
+      const badge = area.querySelector('.count');
+      badge.textContent = `${n}/${own.length}`;
+      badge.classList.toggle('done', n === own.length);
+    });
+  };
+  boxes.forEach((box) => {
+    box.checked = Boolean(ticked[box.dataset.k]);
+    box.addEventListener('change', () => { ticked[box.dataset.k] = box.checked; save(); render(); });
+  });
+  document.getElementById('reset').addEventListener('click', () => { ticked = {}; boxes.forEach((box) => { box.checked = false; }); save(); render(); });
+  render();
+})();
+</script>
+</body></html>
