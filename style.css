@@ -24,3 +24,7 @@ footer { margin-top:64px; padding-top:16px; border-top:1px solid var(--line); fo
 @media (hover:hover) and (pointer:fine) { .qr { display:flex; gap:16px; align-items:center; margin:16px 0 4px; } .qr img { background:#fff; padding:6px; border-radius:8px; } .qr p { margin:0; } }
 h3 { font-size:17px; font-weight:800; margin:22px 0 4px; }
 ol { padding-left:22px; }
+.tester-card { padding-bottom:16px; }
+.tester-card h2 { font-size:19px; }
+.tester-icon { background:#1f5fad; border-radius:12px; }
+.button-quiet { background:transparent; color:var(--ink); border:1.5px solid var(--line); }
